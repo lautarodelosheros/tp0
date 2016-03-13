@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegExGenerator {
-    // TODO: Uncomment this field
+    // TODO: Uncomment this fields
     //private int maxLength;
 
     //public RegExGenerator(int maxLength) {
