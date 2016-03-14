@@ -2,23 +2,107 @@ package ar.fiuba.tdd.template.tp0;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RegExGenerator {
-    // TODO: Uncomment this fields
-    //private int maxLength;
 
-    //public RegExGenerator(int maxLength) {
-    //    this.maxLength = maxLength;
-    //}
+    private int maxLength;
 
-    // TODO: Uncomment parameters
-    public List<String> generate(/*String regEx, int numberOfResults*/) {
-        return new ArrayList<String>() {
-            {
-                add("a");
-                add("b");
-                add("c");
+    public RegExGenerator(int maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public static void main(String [] args) {
+        RegExGenerator generator = new RegExGenerator(10);
+        System.out.print(generator.generate("\\*?", 33));
+    }
+
+    public List<String> generate(String regEx, int numberOfResults) {
+        ArrayList<String> output = new ArrayList<>();
+        for (int i = 0 ; i < numberOfResults ; ++i) {
+            output.add(this.generate(regEx));
+        }
+        return output;
+    }
+
+    public String generate(String regEx) {
+        StringBuilder output = new StringBuilder();
+        int i = 0;
+        while (i < regEx.length()) {
+            if (regEx.charAt(i) == '[') {
+                output.append(this.generateGroup(regEx, i));
+                i = regEx.indexOf(']', i) + 1;
+            } else {
+                output.append(this.generateIndividual(regEx, i));
+                if (regEx.charAt(i) == '\\') {
+                        ++i;
+                }
+                ++i;
             }
-        };
+            if (this.isQuantifier(this.getChar(regEx, i))) {
+                ++i;
+            }
+        }
+        return output.toString();
+    }
+
+    public String generateIndividual(String regEx, int index) {
+        StringBuilder output = new StringBuilder();
+        int number = this.getRandomNumber(regEx, index);
+        for (int i = 0 ; i < number ; ++i) {
+            if (regEx.charAt(index) == '.') {
+                output.append((char)ThreadLocalRandom.current().nextInt(0, 255));
+            } else if (regEx.charAt(index) == '\\') {
+                output.append(this.getChar(regEx, index + 1));
+            } else {
+                output.append(regEx.charAt(index));
+            }
+        }
+        return output.toString();
+    }
+
+    public String generateGroup(String regEx, int index) {
+        StringBuilder output = new StringBuilder();
+        int number = this.getRandomNumber(regEx, index);
+        String chars = this.getGroupChars(regEx, index);
+        for (int i = 0 ; i < number ; ++i) {
+            int random = ThreadLocalRandom.current().nextInt(0, chars.length());
+            output.append(chars.charAt(random));
+        }
+        return output.toString();
+    }
+
+    public int getRandomNumber(String regEx, int index) {
+        char quantifier;
+        if (regEx.charAt(index) == '[') {
+            quantifier = this.getChar(regEx, regEx.indexOf(']', index) + 1);
+        } else if (regEx.charAt(index) != '\\') {
+            quantifier = this.getChar(regEx, index + 1);
+        } else {
+            quantifier = this.getChar(regEx, index + 2);
+        }
+        int min, max;
+        switch (quantifier) {
+            case '*': min = 0; max = this.maxLength; break;
+            case '+': min = 1; max = this.maxLength; break;
+            case '?': min = 0; max = 1; break;
+            default: min = 1; max = 1;
+        }
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
+    public String getGroupChars(String regEx, int index) {
+        return regEx.substring(index + 1, regEx.indexOf(']', index));
+    }
+
+    private boolean isQuantifier(char character) {
+        return Character.toString(character).matches("[\\*\\+\\?]");
+    }
+
+    private char getChar(String chain, int index) {
+        if (index < chain.length()) {
+            return chain.charAt(index);
+        }
+        return 0;
     }
 }
