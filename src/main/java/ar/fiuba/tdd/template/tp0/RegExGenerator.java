@@ -27,20 +27,20 @@ public class RegExGenerator {
 
     public String generate(String regEx) {
         StringBuilder output = new StringBuilder();
-        int i = 0;
-        while (i < regEx.length()) {
-            if (regEx.charAt(i) == '[') {
-                output.append(this.generateGroup(regEx, i));
-                i = regEx.indexOf(']', i) + 1;
+        int index = 0;
+        while (index < regEx.length()) {
+            if (regEx.charAt(index) == '[') {
+                output.append(this.generateGroup(regEx, index));
+                index = regEx.indexOf(']', index) + 1;
             } else {
-                output.append(this.generateIndividual(regEx, i));
-                if (regEx.charAt(i) == '\\') {
-                        ++i;
+                output.append(this.generateIndividual(regEx, index));
+                if (regEx.charAt(index) == '\\') {
+                    ++index;
                 }
-                ++i;
+                ++index;
             }
-            if (this.isQuantifier(this.getChar(regEx, i))) {
-                ++i;
+            if (this.isQuantifier(this.getChar(regEx, index))) {
+                ++index;
             }
         }
         return output.toString();
@@ -81,12 +81,28 @@ public class RegExGenerator {
         } else {
             quantifier = this.getChar(regEx, index + 2);
         }
-        int min, max;
+        return this.getRandomNumberByQuantifier(quantifier);
+    }
+
+    private int getRandomNumberByQuantifier(char quantifier) {
+        int min;
+        int max;
         switch (quantifier) {
-            case '*': min = 0; max = this.maxLength; break;
-            case '+': min = 1; max = this.maxLength; break;
-            case '?': min = 0; max = 1; break;
-            default: min = 1; max = 1;
+            case '*':
+                min = 0;
+                max = this.maxLength;
+                break;
+            case '+':
+                min = 1;
+                max = this.maxLength;
+                break;
+            case '?':
+                min = 0;
+                max = 1;
+                break;
+            default:
+                min = 1;
+                max = 1;
         }
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
