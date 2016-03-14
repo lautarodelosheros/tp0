@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RegExGenerator {
 
     private int maxLength;
+    private static final int DOT_CHAR_COUNT = 256;
 
     public RegExGenerator(int maxLength) {
         this.maxLength = maxLength;
@@ -14,7 +15,7 @@ public class RegExGenerator {
 
     public static void main(String [] args) {
         RegExGenerator generator = new RegExGenerator(10);
-        System.out.print(generator.generate("\\*?", 33));
+        System.out.print(generator.generate(".....................................", 1));
     }
 
     public List<String> generate(String regEx, int numberOfResults) {
@@ -46,12 +47,12 @@ public class RegExGenerator {
         return output.toString();
     }
 
-    public String generateIndividual(String regEx, int index) {
+    private String generateIndividual(String regEx, int index) {
         StringBuilder output = new StringBuilder();
         int number = this.getRandomNumber(regEx, index);
         for (int i = 0 ; i < number ; ++i) {
             if (regEx.charAt(index) == '.') {
-                output.append((char)ThreadLocalRandom.current().nextInt(0, 255));
+                output.append(this.getDotRandomChar());
             } else if (regEx.charAt(index) == '\\') {
                 output.append(this.getChar(regEx, index + 1));
             } else {
@@ -61,7 +62,21 @@ public class RegExGenerator {
         return output.toString();
     }
 
-    public String generateGroup(String regEx, int index) {
+    private char getDotRandomChar() {
+        ArrayList<Integer> list = new ArrayList<>();
+        //Prohibited dot characters
+        list.add(10);
+        list.add(13);
+        list.add(133);
+        int output;
+        output = ThreadLocalRandom.current().nextInt(0, DOT_CHAR_COUNT);
+        while (list.contains(output)) {
+            output = ThreadLocalRandom.current().nextInt(0, DOT_CHAR_COUNT);
+        }
+        return (char)output;
+    }
+
+    private String generateGroup(String regEx, int index) {
         StringBuilder output = new StringBuilder();
         int number = this.getRandomNumber(regEx, index);
         String chars = this.getGroupChars(regEx, index);
@@ -72,7 +87,7 @@ public class RegExGenerator {
         return output.toString();
     }
 
-    public int getRandomNumber(String regEx, int index) {
+    private int getRandomNumber(String regEx, int index) {
         char quantifier;
         if (regEx.charAt(index) == '[') {
             quantifier = this.getChar(regEx, regEx.indexOf(']', index) + 1);
@@ -107,7 +122,7 @@ public class RegExGenerator {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    public String getGroupChars(String regEx, int index) {
+    private String getGroupChars(String regEx, int index) {
         return regEx.substring(index + 1, regEx.indexOf(']', index));
     }
 
