@@ -15,14 +15,10 @@ public class RegExGeneratorTest {
         List<String> results = generator.generate(regEx, numberOfResults);
         // force matching the beginning and the end of the strings
         Pattern pattern = Pattern.compile("^" + regEx + "$");
-        return results
-                .stream()
-                .reduce(true,
-                        (acc, item) -> {
-                            Matcher matcher = pattern.matcher(item);
-                            return acc && matcher.find();
-                        },
-                        (item1, item2) -> item1 && item2);
+        return results.stream().reduce(true, (acc, item) -> {
+                Matcher matcher = pattern.matcher(item);
+                return acc && matcher.find();
+            }, (item1, item2) -> item1 && item2);
     }
 
 
@@ -59,6 +55,36 @@ public class RegExGeneratorTest {
     @Test
     public void testCharacterSetWithQuantifiers() {
         assertTrue(validate("[abc]+", 1));
+    }
+
+    @Test
+    public void testAnyMultipleCharacters() {
+        assertTrue(validate(".*", 1));
+    }
+
+    @Test
+    public void testEscapedQuantifier() {
+        assertTrue(validate("\\+", 1));
+    }
+
+    @Test
+    public void testEscapedSetCharacters() {
+        assertTrue(validate("\\[abc\\]", 1));
+    }
+
+    @Test
+    public void testQuantifiersInSet() {
+        assertTrue(validate("[.+?]*", 1));
+    }
+
+    @Test
+    public void testEscapedQuantifierWithQuantifier() {
+        assertTrue(validate("\\++", 1));
+    }
+
+    @Test
+    public void testIntegration() {
+        assertTrue(validate("[AB]r?s t+uv w[xyzXYZ]*[lL] \\*+", 10));
     }
 
     // TODO: Add more tests!!!
