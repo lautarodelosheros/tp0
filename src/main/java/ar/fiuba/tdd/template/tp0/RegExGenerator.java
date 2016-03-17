@@ -1,7 +1,6 @@
 package ar.fiuba.tdd.template.tp0;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RegExGenerator {
 
@@ -13,10 +12,14 @@ public class RegExGenerator {
 
     public static void main(String [] args) {
         RegExGenerator generator = new RegExGenerator(10);
-        System.out.print(generator.generate("[abc]", 5));
+        try {
+            System.out.print(generator.generate("abc", 5));
+        } catch (InvalidRegExException exception) {
+            System.out.print("Exception thrown: " + exception);
+        }
     }
 
-    public List<String> generate(String regEx, int numberOfResults) {
+    public ArrayList<String> generate(String regEx, int numberOfResults) throws InvalidRegExException {
         ArrayList<String> output = new ArrayList<>();
         for (int i = 0 ; i < numberOfResults ; ++i) {
             output.add(this.generate(regEx));
@@ -24,7 +27,7 @@ public class RegExGenerator {
         return output;
     }
 
-    public String generate(String regEx) {
+    public String generate(String regEx) throws InvalidRegExException {
         StringBuilder output = new StringBuilder();
         RegExParser parser = new RegExParser(this.maxLength);
         ArrayList<RegExSymbol> symbolList = parser.parseRegEx(regEx);

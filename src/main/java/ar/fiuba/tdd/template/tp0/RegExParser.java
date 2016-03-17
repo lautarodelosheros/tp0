@@ -10,10 +10,11 @@ public class RegExParser {
         this.maxLength = maxLength;
     }
 
-    public ArrayList<RegExSymbol> parseRegEx(String regEx) {
+    public ArrayList<RegExSymbol> parseRegEx(String regEx) throws InvalidRegExException {
         ArrayList<RegExSymbol> symbolArray = new ArrayList<>();
         int index = 0;
         while (index < regEx.length()) {
+            this.checkInvalidSymbol(regEx.charAt(index));
             if (regEx.charAt(index) == '[') {
                 symbolArray.add(this.createSet(regEx, index));
                 index = regEx.indexOf(']', index) + 1;
@@ -33,27 +34,19 @@ public class RegExParser {
 
     private RegExSymbol createIndividual(String regEx, int index) {
         RegExQuantifier quantifier = this.getQuantifier(regEx, index);
-        boolean hasQuantifier = false;
-        if (quantifier.isValid()) {
-            hasQuantifier = true;
-        }
         if (regEx.charAt(index) == '.') {
-            return new RegExSymbol('.', quantifier.getQuantity(), true, hasQuantifier, null);
+            return new RegExSymbol('.', quantifier.getQuantity(), true, quantifier.isValid(), null);
         } else if (regEx.charAt(index) == '\\') {
-            return new RegExSymbol(this.getChar(regEx, index + 1), quantifier.getQuantity(), false, hasQuantifier, null);
+            return new RegExSymbol(this.getChar(regEx, index + 1), quantifier.getQuantity(), false, quantifier.isValid(), null);
         } else {
-            return new RegExSymbol(regEx.charAt(index), quantifier.getQuantity(), false, hasQuantifier, null);
+            return new RegExSymbol(regEx.charAt(index), quantifier.getQuantity(), false, quantifier.isValid(), null);
         }
     }
 
     private RegExSymbol createSet(String regEx, int index) {
         RegExQuantifier quantifier = this.getQuantifier(regEx, index);
-        boolean hasQuantifier = false;
-        if (quantifier.isValid()) {
-            hasQuantifier = true;
-        }
         String chars = this.getSetChars(regEx, index);
-        return new RegExSymbol('[', quantifier.getQuantity(), false, hasQuantifier, chars);
+        return new RegExSymbol('[', quantifier.getQuantity(), false, quantifier.isValid(), chars);
     }
 
     private String getSetChars(String regEx, int index) {
@@ -75,6 +68,12 @@ public class RegExParser {
             return chain.charAt(index);
         }
         return 0;
+    }
+
+    private void checkInvalidSymbol(char symbol) throws InvalidRegExException {
+        if (Character.toString(symbol).matches("[\\*\\+\\?\\]]")) {
+            throw new InvalidRegExException();
+        }
     }
 
 }
