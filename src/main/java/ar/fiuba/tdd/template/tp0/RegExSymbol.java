@@ -7,26 +7,25 @@ public class RegExSymbol {
     private static final int DOT_CHAR_COUNT = 256;
 
     private char symbol;
-    private int quantity;
+    private RegExQuantifier quantifier;
     private boolean isDot;
-    private boolean hasQuantifier;
     private String charSet;
 
-    public RegExSymbol(char symbol, int quantity, boolean isDot, boolean hasQuantifier, String charSet) {
+    public RegExSymbol(char symbol, RegExQuantifier quantifier, boolean isDot, String charSet) {
         this.symbol = symbol;
-        this.quantity = quantity;
+        this.quantifier = quantifier;
         this.isDot = isDot;
-        this.hasQuantifier = hasQuantifier;
         this.charSet = charSet;
     }
 
     public boolean hasQuantifier() {
-        return this.hasQuantifier;
+        return (this.quantifier != null) && this.quantifier.isValid();
     }
 
     public String generateMatch() {
         StringBuilder output = new StringBuilder();
-        for (int i = 0 ; i < this.quantity ; ++i) {
+        int quantity = this.quantifier.getQuantity();
+        for (int i = 0 ; i < quantity ; ++i) {
             if (this.isDot) {
                 output.append(this.getDotChar());
             } else if (this.charSet != null) {

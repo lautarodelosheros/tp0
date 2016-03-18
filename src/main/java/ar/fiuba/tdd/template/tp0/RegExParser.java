@@ -35,18 +35,18 @@ public class RegExParser {
     private RegExSymbol createIndividual(String regEx, int index) {
         RegExQuantifier quantifier = this.getQuantifier(regEx, index);
         if (regEx.charAt(index) == '.') {
-            return new RegExSymbol('.', quantifier.getQuantity(), true, quantifier.isValid(), null);
+            return new RegExSymbol('.', quantifier, true, null);
         } else if (regEx.charAt(index) == '\\') {
-            return new RegExSymbol(this.getChar(regEx, index + 1), quantifier.getQuantity(), false, quantifier.isValid(), null);
+            return new RegExSymbol(this.getChar(regEx, index + 1), quantifier, false, null);
         } else {
-            return new RegExSymbol(regEx.charAt(index), quantifier.getQuantity(), false, quantifier.isValid(), null);
+            return new RegExSymbol(regEx.charAt(index), quantifier, false, null);
         }
     }
 
     private RegExSymbol createSet(String regEx, int index) {
         RegExQuantifier quantifier = this.getQuantifier(regEx, index);
         String chars = this.getSetChars(regEx, index);
-        return new RegExSymbol('[', quantifier.getQuantity(), false, quantifier.isValid(), chars);
+        return new RegExSymbol('[', quantifier, false, chars);
     }
 
     private String getSetChars(String regEx, int index) {
