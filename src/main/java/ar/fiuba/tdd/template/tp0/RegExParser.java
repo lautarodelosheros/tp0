@@ -43,14 +43,22 @@ public class RegExParser {
         }
     }
 
-    private RegExSymbol createSet(String regEx, int index) {
+    private RegExSymbol createSet(String regEx, int index) throws InvalidRegExException {
         RegExQuantifier quantifier = this.getQuantifier(regEx, index);
         String chars = this.getSetChars(regEx, index);
         return new RegExSymbol('[', quantifier, false, chars);
     }
 
-    private String getSetChars(String regEx, int index) {
-        return regEx.substring(index + 1, regEx.indexOf(']', index));
+    private String getSetChars(String regEx, int index) throws InvalidRegExException {
+        StringBuilder aux = new StringBuilder(regEx.substring(index + 1, regEx.indexOf(']', index)));
+        for (int i = 0 ; i < aux.length() ; ++i) {
+            if (aux.charAt(i) == '[' || aux.charAt(i) == ']') {
+                throw new InvalidRegExException();
+            } else if (aux.charAt(i) == '\\') {
+                aux.deleteCharAt(i);
+            }
+        }
+        return aux.toString();
     }
 
     private RegExQuantifier getQuantifier(String regEx, int index) {

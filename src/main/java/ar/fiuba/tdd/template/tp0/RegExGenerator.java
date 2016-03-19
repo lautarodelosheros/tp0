@@ -13,7 +13,7 @@ public class RegExGenerator {
     public static void main(String [] args) {
         RegExGenerator generator = new RegExGenerator(10);
         try {
-            System.out.print(generator.generate("abc", 5));
+            System.out.print(generator.generate("[ab\\@]", 100));
         } catch (InvalidRegExException exception) {
             System.out.print("Exception thrown: " + exception);
         }

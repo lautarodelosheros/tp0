@@ -92,18 +92,30 @@ public class RegExGeneratorTest {
     }
 
     @Test
+    public void testEscapedCharacterInsideSet() {
+        assertTrue(validate("[ab\\@]", 10));
+    }
+
+    @Test
     public void testIntegration() {
-        assertTrue(validate("[AB]r?s t+uv w[xyzXYZ]*[lL] \\*+", 10));
+        assertTrue(validate("[AB]r?s \\;t+uv w[xy\\|XYZ]*[lL] \\*+", 10));
     }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testInvalidSet() throws InvalidRegExException {
+    public void testInvalidCloseSet() throws InvalidRegExException {
         thrown.expect(InvalidRegExException.class);
         RegExGenerator generator = new RegExGenerator(this.maxLength);
         generator.generate("[abc]abc]");
+    }
+
+    @Test
+    public void testInvalidOpenSet() throws InvalidRegExException {
+        thrown.expect(InvalidRegExException.class);
+        RegExGenerator generator = new RegExGenerator(this.maxLength);
+        generator.generate("[abc[abc]");
     }
 
     @Test
