@@ -50,13 +50,9 @@ public class RegExParser {
     }
 
     private String getSetChars(String regEx, int index) throws InvalidRegExException {
-        if (regEx.indexOf(']', index) == -1) {
-            throw new InvalidRegExException();
-        }
+        this.checkSetHasClosure(regEx, index);
         StringBuilder aux = new StringBuilder(regEx.substring(index + 1, regEx.indexOf(']', index)));
-        if (aux.length() == 0) {
-            throw new InvalidRegExException();
-        }
+        this.checkSetIsNotEmpty(aux);
         for (int i = 0 ; i < aux.length() ; ++i) {
             if (aux.charAt(i) == '[' || aux.charAt(i) == ']') {
                 throw new InvalidRegExException();
@@ -65,6 +61,18 @@ public class RegExParser {
             }
         }
         return aux.toString();
+    }
+
+    private void checkSetHasClosure(String regEx, int index) throws InvalidRegExException {
+        if (regEx.indexOf(']', index) == -1) {
+            throw new InvalidRegExException();
+        }
+    }
+
+    private void checkSetIsNotEmpty(StringBuilder chain) throws InvalidRegExException {
+        if (chain.length() == 0) {
+            throw new InvalidRegExException();
+        }
     }
 
     private RegExQuantifier getQuantifier(String regEx, int index) {
