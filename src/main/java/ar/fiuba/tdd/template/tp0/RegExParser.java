@@ -50,7 +50,13 @@ public class RegExParser {
     }
 
     private String getSetChars(String regEx, int index) throws InvalidRegExException {
+        if (regEx.indexOf(']', index) == -1) {
+            throw new InvalidRegExException();
+        }
         StringBuilder aux = new StringBuilder(regEx.substring(index + 1, regEx.indexOf(']', index)));
+        if (aux.length() == 0) {
+            throw new InvalidRegExException();
+        }
         for (int i = 0 ; i < aux.length() ; ++i) {
             if (aux.charAt(i) == '[' || aux.charAt(i) == ']') {
                 throw new InvalidRegExException();

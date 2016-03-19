@@ -108,11 +108,18 @@ public class RegExGeneratorTest {
     public void testInvalidCloseSet() throws InvalidRegExException {
         thrown.expect(InvalidRegExException.class);
         RegExGenerator generator = new RegExGenerator(this.maxLength);
-        generator.generate("[abc]abc]");
+        generator.generate("abc]def");
     }
 
     @Test
     public void testInvalidOpenSet() throws InvalidRegExException {
+        thrown.expect(InvalidRegExException.class);
+        RegExGenerator generator = new RegExGenerator(this.maxLength);
+        generator.generate("abc[def");
+    }
+
+    @Test
+    public void testInvalidOpenSetInsideSet() throws InvalidRegExException {
         thrown.expect(InvalidRegExException.class);
         RegExGenerator generator = new RegExGenerator(this.maxLength);
         generator.generate("[abc[abc]");
@@ -122,7 +129,14 @@ public class RegExGeneratorTest {
     public void testInvalidQuantifier() throws InvalidRegExException {
         thrown.expect(InvalidRegExException.class);
         RegExGenerator generator = new RegExGenerator(this.maxLength);
-        generator.generate("a**");
+        generator.generate("*");
+    }
+
+    @Test
+    public void testEmptySet() throws InvalidRegExException {
+        thrown.expect(InvalidRegExException.class);
+        RegExGenerator generator = new RegExGenerator(this.maxLength);
+        generator.generate("[]");
     }
 
 }
