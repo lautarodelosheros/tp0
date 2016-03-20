@@ -33,12 +33,12 @@ public class RegExGeneratorTest {
 
     @Test
     public void testAnyCharacter() {
-        assertTrue(validate(".", 1));
+        assertTrue(validate(".", 10));
     }
 
     @Test
     public void testMultipleCharacters() {
-        assertTrue(validate("...", 1));
+        assertTrue(validate("...", 10));
     }
 
     @Test
@@ -48,22 +48,22 @@ public class RegExGeneratorTest {
 
     @Test
     public void testLiteralDotCharacter() {
-        assertTrue(validate("\\@..", 1));
+        assertTrue(validate("\\@..", 10));
     }
 
     @Test
     public void testZeroOrOneCharacter() {
-        assertTrue(validate("\\@.h?", 1));
+        assertTrue(validate("\\@.h?", 10));
     }
 
     @Test
     public void testCharacterSet() {
-        assertTrue(validate("[abc]", 1));
+        assertTrue(validate("[abc]", 10));
     }
 
     @Test
     public void testCharacterSetWithQuantifiers() {
-        assertTrue(validate("[abc]+", 1));
+        assertTrue(validate("[abc]+", 10));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class RegExGeneratorTest {
 
     @Test
     public void testQuantifiersInSet() {
-        assertTrue(validate("[.+?]*", 1));
+        assertTrue(validate("[.+?]*", 100));
     }
 
     @Test
@@ -93,12 +93,22 @@ public class RegExGeneratorTest {
 
     @Test
     public void testEscapedCharacterInsideSet() {
-        assertTrue(validate("[ab\\@]", 10));
+        assertTrue(validate("[ab\\@]", 100));
+    }
+
+    @Test
+    public void testEscapedSetOpenerInsideSet() {
+        assertTrue(validate("[ab\\[c]", 100));
+    }
+
+    @Test
+    public void testEscapedSetCloserInsideSet() {
+        assertTrue(validate("[ab\\]c]", 100));
     }
 
     @Test
     public void testIntegration() {
-        assertTrue(validate("[AB]r?s \\;t+uv w[xy\\|XYZ]*[lL] \\*+", 10));
+        assertTrue(validate("[AB]r?s \\;t+uv w[xy\\|XYZ]*[lL] \\*+", 100));
     }
 
     @Rule
@@ -123,6 +133,13 @@ public class RegExGeneratorTest {
         thrown.expect(InvalidRegExException.class);
         RegExGenerator generator = new RegExGenerator(this.maxLength);
         generator.generate("[abc[abc]");
+    }
+
+    @Test
+    public void testInvalidOpenSetWithEscapedCloseSet() throws InvalidRegExException {
+        thrown.expect(InvalidRegExException.class);
+        RegExGenerator generator = new RegExGenerator(this.maxLength);
+        generator.generate("[abc\\]d");
     }
 
     @Test
