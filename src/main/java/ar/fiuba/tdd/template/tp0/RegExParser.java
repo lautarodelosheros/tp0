@@ -11,36 +11,43 @@ public class RegExParser {
     }
 
     public ArrayList<RegExSymbol> parseRegEx(String regEx) throws InvalidRegExException {
-        ArrayList<RegExSymbol> symbolArray = new ArrayList<>();
+        ArrayList<RegExSymbol> symbolList = new ArrayList<>();
         int index = 0;
         while (index < regEx.length()) {
             this.checkInvalidSymbol(regEx.charAt(index));
             if (regEx.charAt(index) == '[') {
-                symbolArray.add(this.createSet(regEx, index));
-                index = regEx.indexOf(']', index) + 1;
+                symbolList.add(this.createSet(regEx, index));
+                index = this.getSetClosure(regEx, index) + 1;
             } else {
-                symbolArray.add(this.createIndividual(regEx, index));
+                symbolList.add(this.createIndividual(regEx, index));
                 if (regEx.charAt(index) == '\\') {
                     ++index;
                 }
                 ++index;
             }
-            if (symbolArray.get(symbolArray.size() - 1).hasQuantifier()) {
+            if (symbolList.get(symbolList.size() - 1).hasQuantifier()) {
                 ++index;
             }
         }
-        return symbolArray;
+        return symbolList;
     }
 
-    private RegExSymbol createIndividual(String regEx, int index) {
+    private RegExSymbol createIndividual(String regEx, int index) throws InvalidRegExException {
         RegExQuantifier quantifier = this.getQuantifier(regEx, index);
         if (regEx.charAt(index) == '.') {
             return new RegExSymbol('.', quantifier, true, null);
         } else if (regEx.charAt(index) == '\\') {
-            return new RegExSymbol(this.getChar(regEx, index + 1), quantifier, false, null);
+            return new RegExSymbol(this.getEscapedChar(regEx, index + 1), quantifier, false, null);
         } else {
             return new RegExSymbol(regEx.charAt(index), quantifier, false, null);
         }
+    }
+
+    private char getEscapedChar(String chain, int index) throws InvalidRegExException {
+        if (index >= chain.length()) {
+            throw new InvalidRegExException();
+        }
+        return chain.charAt(index);
     }
 
     private RegExSymbol createSet(String regEx, int index) throws InvalidRegExException {

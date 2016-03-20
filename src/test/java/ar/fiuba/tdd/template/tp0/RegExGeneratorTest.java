@@ -16,11 +16,11 @@ public class RegExGeneratorTest {
 
     private boolean validate(String regEx, int numberOfResults) {
         RegExGenerator generator = new RegExGenerator(this.maxLength);
-        ArrayList<String> results = new ArrayList<>();
+        ArrayList<String> results;
         try {
             results = generator.generate(regEx, numberOfResults);
         } catch (InvalidRegExException exception) {
-            System.out.print("Exception thrown: " + exception);
+            return false;
         }
         // force matching the beginning and the end of the strings
         Pattern pattern = Pattern.compile("^" + regEx + "$");
@@ -154,6 +154,13 @@ public class RegExGeneratorTest {
         thrown.expect(InvalidRegExException.class);
         RegExGenerator generator = new RegExGenerator(this.maxLength);
         generator.generate("[]");
+    }
+
+    @Test
+    public void testInvalidEscape() throws InvalidRegExException {
+        thrown.expect(InvalidRegExException.class);
+        RegExGenerator generator = new RegExGenerator(this.maxLength);
+        generator.generate("\\");
     }
 
 }

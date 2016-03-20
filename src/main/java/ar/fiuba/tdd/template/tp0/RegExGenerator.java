@@ -11,9 +11,9 @@ public class RegExGenerator {
     }
 
     public static void main(String [] args) {
-        RegExGenerator generator = new RegExGenerator(10);
+        RegExGenerator generator = new RegExGenerator(Integer.parseInt(args[2]));
         try {
-            System.out.print(generator.generate("[abc]", 100));
+            System.out.print(generator.generate(args[0], Integer.parseInt(args[1])));
         } catch (InvalidRegExException exception) {
             System.out.print("Exception thrown: " + exception);
         }
@@ -31,7 +31,7 @@ public class RegExGenerator {
         StringBuilder output = new StringBuilder();
         RegExParser parser = new RegExParser(this.maxLength);
         ArrayList<RegExSymbol> symbolList = parser.parseRegEx(regEx);
-        for ( RegExSymbol symbol : symbolList) {
+        for (RegExSymbol symbol : symbolList) {
             output.append(symbol.generateMatch());
         }
         return output.toString();
