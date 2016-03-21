@@ -13,7 +13,7 @@ public class RegExGenerator {
     public static void main(String [] args) {
         RegExGenerator generator = new RegExGenerator(Integer.parseInt(args[2]));
         try {
-            System.out.print(generator.generate(args[0], Integer.parseInt(args[1])));
+            System.out.print(generator.generate("\\\\+", Integer.parseInt(args[1])));
         } catch (InvalidRegExException exception) {
             System.out.print("Exception thrown: " + exception);
         }

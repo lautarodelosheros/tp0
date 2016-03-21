@@ -77,6 +77,11 @@ public class RegExGeneratorTest {
     }
 
     @Test
+    public void testEscapedEscape() {
+        assertTrue(validate("\\\\+", 100));
+    }
+
+    @Test
     public void testEscapedSetCharacters() {
         assertTrue(validate("\\[abc\\]", 1));
     }
@@ -104,6 +109,11 @@ public class RegExGeneratorTest {
     @Test
     public void testEscapedSetCloserInsideSet() {
         assertTrue(validate("[ab\\]c]", 100));
+    }
+
+    @Test
+    public void testEscapedEscapeInsideSet() {
+        assertTrue(validate("[a\\\\]+", 100));
     }
 
     @Test

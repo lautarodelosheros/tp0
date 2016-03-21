@@ -59,12 +59,15 @@ public class RegExParser {
         int closeIndex = this.getSetClosure(regEx, index);
         StringBuilder setChars = new StringBuilder(regEx.substring(index + 1, closeIndex));
         this.checkSetIsNotEmpty(setChars);
-        for (int i = 0 ; i < setChars.length() ; ++i) {
-            if (setChars.charAt(i) == '[' || setChars.charAt(i) == ']') {
+        int itr = 0;
+        while (itr < setChars.length()) {
+            if (setChars.charAt(itr) == '[' || setChars.charAt(itr) == ']') {
                 throw new InvalidRegExException();
-            } else if (setChars.charAt(i) == '\\') {
-                setChars.deleteCharAt(i);
+            } else if (setChars.charAt(itr) == '\\') {
+                setChars.deleteCharAt(itr);
+                ++itr;
             }
+            ++itr;
         }
         return setChars.toString();
     }
@@ -76,7 +79,7 @@ public class RegExParser {
             closeIndex = regEx.indexOf(']', closeIndex);
             if (closeIndex == -1) {
                 throw new InvalidRegExException();
-            } else if (regEx.charAt(closeIndex - 1) == '\\') {
+            } else if (regEx.charAt(closeIndex - 1) == '\\' && this.getChar(regEx, closeIndex - 2) != '\\') {
                 ++closeIndex;
             } else {
                 found = true;
